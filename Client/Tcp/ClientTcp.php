@@ -11,7 +11,7 @@ set_time_limit(0);
 require_once(__DIR__ . "/ClientMain.php");
 require_once(__DIR__ . "/ClientTcpConfig.php");
 
-class Client_Tcp {
+class ClientTcp {
 
     /**
      * @var $tcp_client object
@@ -54,7 +54,6 @@ class Client_Tcp {
     public function __construct()
     {
         $this->set_config();
-        $this->send_data();
     }
 
     /**
@@ -62,9 +61,9 @@ class Client_Tcp {
      */
     public function set_config()
     {
-        $this->server_host = Client_Tcp_Config::SERVER_HOST;
-        $this->server_port = Client_Tcp_Config::SERVER_PORT;
-        $this->connect_type = Client_Tcp_Config::CONNECT_TYPE;
+        $this->server_host = ClientTcpConfig::SERVER_HOST;
+        $this->server_port = ClientTcpConfig::SERVER_PORT;
+        $this->connect_type = ClientTcpConfig::CONNECT_TYPE;
     }
 
     /**
@@ -72,14 +71,14 @@ class Client_Tcp {
      */
     public function main()
     {
-        go(function() {
-            $this->tcp_client = new Client_Main($this->connect_type);
+        Swoole\Coroutine\run(function () {
+            $this->tcp_client = new ClientMain($this->connect_type);
             $this->tcp_client->host = $this->server_host;
             $this->tcp_client->port = $this->server_port;
-            $this->tcp_client->data = $this->request_data;
             $this->tcp_client->clientConnect();
+            $send_data = $this->send_data();
+            $this->tcp_client->data = $send_data;
             $this->tcp_client->clientSend();
-            $this->tcp_client->clientIsConnected();
             $this->tcp_client->clientRecvKeep();
         });
     }
@@ -100,7 +99,7 @@ class Client_Tcp {
 
     /**
      * get wan mac address
-     * 
+     *
      * @return string
      */
     public function get_wan_mac_address()
@@ -118,13 +117,16 @@ class Client_Tcp {
     public function send_data()
     {
         $data = array();
-        $data['ip'] = $this->get_wan_ip();
-        $data['status'] = 'online';
-        $data['auth_name'] = 'cpe';
-        $data['mac_address'] = $this->get_wan_mac_address();
-        $this->request_data = $data;
+        $data['ClientType'] = 'Cpe';
+        $data['Action'] = 'client_init';
+        $data['Sncode'] = '1234567890';
+        $data['SecretKey']= crc32("client_init" . "1234567890");
+        $data['CpeName'] = 'openwrt';
+        $data['CpeIp'] = $this->get_wan_ip();
+        $data['CpeMac'] = $this->get_wan_mac_address();
+        $data['CpeStatus'] = 'online';
+        return $data;
     }
 }
-$tcp = new Client_Tcp();
+$tcp = new ClientTcp();
 $tcp->main();
-?>

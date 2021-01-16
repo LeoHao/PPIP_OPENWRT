@@ -7,8 +7,8 @@
  * @Description      : this is base on Swoole tcp client
  **/
 
-class Client_Tcp_Config {
-    
+class ClientTcpConfig {
+
     //const SERVER_HOST = '175.25.22.29';
     const SERVER_HOST = '192.168.3.30';
 
@@ -39,18 +39,22 @@ class Client_Tcp_Config {
      * allow paas action
      * @var array
      */
-    public $allow_action = array(
-        'luci_theme_update',
-        'luci_package_update',
-        'ppip_update',
-        'os_update',
-        'plugins_network_add',
+    public static $plugins_action = array(
         'plugins_network_special_open',
-        'plugins_network_remove',
-        'plugins_network_update',
-        'plugins_firewall_add',
-        'plugins_firewall_remove',
-        'plugins_firewall_update'
+        'plugins_network_special_change',
+        'plugins_network_webside_open',
+        'plugins_network_webside_change',
+        'plugins_network_group_open',
+        'plugins_network_group_change'
     );
+
+    /**
+     * allow os action
+     * @var array
+     */
+    public static $os_action = array(
+        'cpe_opkg_update_theme',
+        'cpe_opkg_update_plugins'
+    );
+
 }
-?>

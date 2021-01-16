@@ -7,7 +7,7 @@
  * @Description      : this is task dispose
  **/
 
-class Task_Service {
+class TaskService {
 
     /**
      * @var task_type
@@ -25,28 +25,18 @@ class Task_Service {
     public $task_scope;
 
     /**
-     * @var config
-     */
-    public $config;
-    /**
-     * Task_Service constructor.
-     * @param $data paas response
-     */
-    public function __construct($data) {
-        $this->config = new Client_Tcp_Config();
-        $data = $this->object_to_array($data);
-        $this->analysis_data($data);
-    }
-
-    /**
      * analysis response data
      * @param $data
      */
-    public function analysis_data($data) {
-        $this->task_action = empty($data['action']) ? '':$data['action'];
-        if (!in_array($this->task_action, $this->config->allow_action)) {
-            throw new Exception("this action don't allow");
+    public static function analysis_data($data) {
+        $task_action = empty($data['Action']) ? '':$data['Action'];
+        $allow_action = array_merge(ClientTcpConfig::$plugins_action, ClientTcpConfig::$os_action);
+        if (!in_array($task_action, $allow_action)) {
+            return false;
         }
+        //TODO valudate ClientType is paas
+        //TODO validate SecretKey is true
+        return true;
     }
 
     /**
@@ -54,21 +44,31 @@ class Task_Service {
      * @param $array
      * @return array|mixed
      */
-    public function object_to_array($array) {
+    public static function object_to_array($array) {
         if(is_object($array)) {
             $array = (array)$array;
         }
         if(is_array($array)) {
             foreach($array as $key=>$value) {
-                $array[$key] = $this->object_to_array($value);
+                $array[$key] = self::object_to_array($value);
             }
         }
         return $array;
     }
 
-    public function dispose_task() {
-        $output = exec("sh /usr/lib/lua/plugins/" . $this->task_action . ".sh");
-        return $output;
+    /**
+     * dispose task
+     * @param $data
+     * @return array
+     */
+    public static function dispose_task($data) {
+        $result = array();
+        $data = self::object_to_array($data);
+        if(self::analysis_data($data)) {
+            $action_name = $data['Action'];
+            $result = ActionService::$action_name($data);
+        }
+        return $result;
     }
+
 }
-?>

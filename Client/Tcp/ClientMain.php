@@ -8,8 +8,9 @@
  **/
 
 require_once(__DIR__ . "/TaskService.php");
+require_once(__DIR__ . "/ActionService.php");
 
-class Client_Main {
+class ClientMain {
 
     /**
      * @var \swoole_client
@@ -112,10 +113,11 @@ class Client_Main {
             $data = $this->client->recv();
             if (strlen($data) > 0) {
                 $data = json_decode($data);
-                $tcp_task = new Task_Service($data);
-                $response = $tcp_task->dispose_task();
-                $this->data['exec_result'] = $response;
-                $this->client->send(json_encode($this->data));
+                $response = TaskService::dispose_task($data);
+                if (!empty($response)) {
+                    $this->data['exec_result'] = $response;
+                    $this->client->send(json_encode($this->data));
+                }
             } else {
                 if ($data === '') {
                     // 全等于空 直接关闭连接
@@ -132,8 +134,8 @@ class Client_Main {
 
     public function heartbeat_check()
     {
-        Swoole\Timer::tick(3000, function () {
-            $this->client->send(json_encode($this->data));
+        Swoole\Timer::tick(3000000, function () {
+            $this->client->send(json_encode(array('CpeStatus' => 'online')));
         });
     }
     /**
@@ -144,4 +146,3 @@ class Client_Main {
 
     }
 }
-?>
