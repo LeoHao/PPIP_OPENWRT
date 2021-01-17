@@ -113,9 +113,14 @@ class ClientMain {
             $data = $this->client->recv();
             if (strlen($data) > 0) {
                 $data = json_decode($data);
+                $data = self::object_to_array($data);
                 $response = TaskService::dispose_task($data);
                 if (!empty($response)) {
-                    $this->data['exec_result'] = $response;
+                    $send_data = $this->data;
+                    $send_data['Action'] = $data['Action'];
+                    $send_data['SecretKey'] = crc32($data['Action'].$send_data['Sncode']);
+                    $send_data['CpeStatus'] = 'online';
+                    $send_data['ExecStatus'] = $response;
                     $this->client->send(json_encode($this->data));
                 }
             } else {
@@ -144,5 +149,22 @@ class ClientMain {
     public function clientSet()
     {
 
+    }
+
+    /**
+     * object as array
+     * @param $array
+     * @return array|mixed
+     */
+    public static function object_to_array($array) {
+        if(is_object($array)) {
+            $array = (array)$array;
+        }
+        if(is_array($array)) {
+            foreach($array as $key=>$value) {
+                $array[$key] = self::object_to_array($value);
+            }
+        }
+        return $array;
     }
 }

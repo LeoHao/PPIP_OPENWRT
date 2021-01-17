@@ -11,6 +11,11 @@ define('ROOT_PATH' , dirname(dirname(dirname(__FILE__))));
 
 class ActionService {
 
+    /**
+     * plugins network special open
+     * @param $data
+     * @return string $output
+     */
     public static function plugins_network_special_open($data)
     {
         if (empty($data['ActionExt'])) {
@@ -19,7 +24,7 @@ class ActionService {
         $sh_path = ROOT_PATH . '/Command/NetWork/';
         $sh_file = self::getActionToShName($data['Action']);
         $special_conf = array();
-        $special_conf["connect_type"] = isset($data['ActionExt']['ConnectType']) ? $data['ActionExt']['ConnectType'] : 'L2TP';
+        $special_conf["connect_type"] = isset($data['ActionExt']['ConnectType']) ? strtolower($data['ActionExt']['ConnectType']) : 'l2tp';
         $special_conf["node_ip"] = isset($data['ActionExt']['NodeIp']) ? $data['ActionExt']['NodeIp'] : '';
         $special_conf["account_name"] = isset($data['ActionExt']['AccountName']) ? $data['ActionExt']['AccountName'] : '';
         $special_conf["account_pwd"] = isset($data['ActionExt']['AccountPwd']) ? $data['ActionExt']['AccountPwd'] : '';
@@ -28,9 +33,8 @@ class ActionService {
         }
         $params_str = implode(" ", $special_conf);
         $exec_str = "sh " . $sh_path . $sh_file . " " . $params_str;
-        var_dump($exec_str);die;
-
-        //$output = exec("sh /usr/lib/lua/plugins/" . $this->task_action . ".sh");
+        $output = exec($exec_str);
+        return $output;
 
     }
 

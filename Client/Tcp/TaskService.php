@@ -39,22 +39,7 @@ class TaskService {
         return true;
     }
 
-    /**
-     * object as array
-     * @param $array
-     * @return array|mixed
-     */
-    public static function object_to_array($array) {
-        if(is_object($array)) {
-            $array = (array)$array;
-        }
-        if(is_array($array)) {
-            foreach($array as $key=>$value) {
-                $array[$key] = self::object_to_array($value);
-            }
-        }
-        return $array;
-    }
+
 
     /**
      * dispose task
@@ -63,7 +48,6 @@ class TaskService {
      */
     public static function dispose_task($data) {
         $result = array();
-        $data = self::object_to_array($data);
         if(self::analysis_data($data)) {
             $action_name = $data['Action'];
             $result = ActionService::$action_name($data);
