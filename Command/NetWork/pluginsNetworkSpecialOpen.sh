@@ -8,6 +8,15 @@ UserName=$3
 #network for special pwd
 PassWord=$4
 
+uci delete network.special
+uci commit network
+sleep 1
+
+#delete firewall last zone
+uci delete firewall.@zone[-1]
+uci commit firewall
+sleep 1
+
 #add network interface
 uci set network.special='interface'
 uci set network.special.proto="$ConnectType"
