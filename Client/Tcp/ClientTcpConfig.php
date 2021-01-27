@@ -12,7 +12,7 @@ class ClientTcpConfig {
     //const SERVER_HOST = '175.25.22.29';
     const SERVER_HOST = '192.168.3.30';
 
-    const SERVER_PORT = '6001';
+    const SERVER_PORT = '7250';
 
     const TIME_OUT = '0.5';
 
