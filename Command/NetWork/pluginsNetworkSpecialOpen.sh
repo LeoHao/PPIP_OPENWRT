@@ -7,6 +7,18 @@ ServerAddress=$2
 UserName=$3
 #network for special pwd
 PassWord=$4
+#remote address
+RemoteAddress=$5
+#vpn name
+VpnName=$6
+#wan eth?
+WanPhysical=$7
+#local wan ip
+WanIp=$8
+#lan gateway
+LanGateway=$9
+#nat type
+NatType=${10}
 
 uci delete network.special
 uci commit network
@@ -34,6 +46,10 @@ uci set network.special.ipv6='auto'
 uci commit network
 sleep 2
 
+iptables -t nat -A POSTROUTING -s $LanGateway/24 -o $WanPhysical -j SNAT --to $WanIp
+iptables -t nat -A POSTROUTING -s $LanGateway/24 -o $NatType -j SNAT --to $RemoteAddress
+sleep 1
+
 #add firewall zone for special
 uci add firewall zone
 uci set firewall.@zone[-1].name='special'
@@ -45,7 +61,12 @@ uci set firewall.@zone[-1].network='special'
 uci commit firewall
 sleep 2
 
-/etc/init.d/network restart
+/etc/init.d/network reload
+sleep 2
+
+ifup special
+sleep 5
+
 #check network special connect
 function check_connect()
 {
@@ -56,11 +77,9 @@ function check_connect()
         echo failed
     fi
 }
-sleep 20
-check_connect google.hk
+check_connect www.google.com
 #
 ##restart network and firewall
 ##/etc/init.d/network reload
 ##/etc/init.d/firewall reload
 ##add forwarding for special
-##ifup special
