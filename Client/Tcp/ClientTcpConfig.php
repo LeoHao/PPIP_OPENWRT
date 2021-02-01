@@ -9,8 +9,8 @@
 
 class ClientTcpConfig {
 
-    //const SERVER_HOST = '175.25.22.29';
-    const SERVER_HOST = '192.168.3.30';
+    const SERVER_HOST = '175.25.22.29';
+    //const SERVER_HOST = '192.168.3.30';
 
     const SERVER_PORT = '7250';
 
@@ -41,11 +41,7 @@ class ClientTcpConfig {
      */
     public static $plugins_action = array(
         'plugins_network_special_open',
-        'plugins_network_special_change',
         'plugins_network_webside_open',
-        'plugins_network_webside_change',
-        'plugins_network_group_open',
-        'plugins_network_group_change'
     );
 
     /**

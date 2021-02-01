@@ -19,18 +19,17 @@ WanIp=$8
 LanGateway=$9
 #nat type
 NatType=${10}
+#domain
+Domain=${11}
 
-uci show network.special
-if [ $? -eq 0 ];then
-  #delete network special
-  uci delete network.special
-  uci commit network
-  sleep 1
-  #delete firewall last zone
-  uci delete firewall.@zone[-1]
-  uci commit firewall
-  sleep 1
-fi
+uci delete network.special
+uci commit network
+sleep 1
+
+#delete firewall last zone
+uci delete firewall.@zone[-1]
+uci commit firewall
+sleep 1
 
 #add network interface
 uci set network.special='interface'
@@ -39,14 +38,13 @@ uci set network.special.server="$ServerAddress"
 uci set network.special.username="$UserName"
 uci set network.special.password="$PassWord"
 uci set network.special.ipv6='auto'
-
-#uci set network.special.ifname="tun0"
-#uci set network.special.mtu="1410"
-#uci set network.special.keepalive="60"
-#uci set network.special.demand="30"
-#uci set network.special.pppd_options="remotename $UserName"
-
+uci set network.special.defaultroute='0'
 uci commit network
+#uci set network.special_route=route
+#uci set network.special_route.interface='special'
+#uci set network.special_route.target="0.0.0.0/0"
+#uci set network.special_route.gateway="192.168.3.1"
+#uci commit network
 sleep 2
 
 iptables -t nat -A POSTROUTING -s $LanGateway/24 -o $WanPhysical -j SNAT --to $WanIp
@@ -80,9 +78,4 @@ function check_connect()
         echo failed
     fi
 }
-check_connect google.com
-#
-##restart network and firewall
-##/etc/init.d/network reload
-##/etc/init.d/firewall reload
-##add forwarding for special
+check_connect baidu.com

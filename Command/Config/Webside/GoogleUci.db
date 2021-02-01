@@ -1,0 +1,25 @@
+config route 'ppip_webside_route0'
+	option interface 'wan'
+	option target '64.233.188.0/24'
+	option gateway '10.10.100.1'
+
+config route 'ppip_webside_route1'
+	option interface 'wan'
+	option target '216.58.200.0/24'
+	option gateway '10.10.100.1'
+
+config route 'ppip_webside_route2'
+	option interface 'wan'
+	option target '59.24.3.0/24'
+	option gateway '10.10.100.1'
+
+config route 'ppip_webside_route3'
+	option interface 'wan'
+	option target '172.217.160.0/24'
+	option gateway '10.10.100.1'
+
+config route 'ppip_webside_route4'
+	option interface 'wan'
+	option target '0.0.0.0/0'
+	option gateway '192.168.3.1'
+

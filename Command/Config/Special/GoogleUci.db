@@ -1,0 +1,5 @@
+config route 'ppip_webside_route0'
+	option interface 'wan'
+	option target ''
+	option gateway '10.10.100.1'
+

@@ -100,7 +100,7 @@ class ClientMain {
      */
     public function clientSend()
     {
-        $this->client->send(json_encode($this->data));
+		$this->client->send(json_encode($this->data));
     }
 
     /**
@@ -121,7 +121,8 @@ class ClientMain {
                     $send_data['SecretKey'] = crc32($data['Action'].$send_data['Sncode']);
                     $send_data['CpeStatus'] = 'online';
                     $send_data['ExecStatus'] = $response;
-                    $this->client->send(json_encode($this->data));
+					$this->clientConnect();
+					$this->client->send(json_encode($send_data));
                 }
             } else {
                 if ($data === '') {
